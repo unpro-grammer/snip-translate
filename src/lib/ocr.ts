@@ -16,7 +16,6 @@ async function getWorker(lang: string): Promise<Tesseract.Worker> {
     workerPath: chrome.runtime.getURL("tesseract/worker.min.js"),
     workerBlobURL: false,
     corePath: chrome.runtime.getURL("tesseract/"),
-    langPath: "https://tessdata.projectnaptha.com/4.0.0",
     cacheMethod: "write",
   });
   return workerPromise;

@@ -39,6 +39,9 @@ async function ensureOffscreenDocument(): Promise<void> {
   });
 }
 
+const OCR_MAX_DIMENSION = 2200;
+const OCR_UPSCALE = 2;
+
 async function cropToDataUrl(fullDataUrl: string, rect: Rect): Promise<string> {
   const blob = await (await fetch(fullDataUrl)).blob();
   const bitmap = await createImageBitmap(blob);
@@ -48,12 +51,22 @@ async function cropToDataUrl(fullDataUrl: string, rect: Rect): Promise<string> {
   const sw = rect.width * rect.dpr;
   const sh = rect.height * rect.dpr;
 
-  const canvas = new OffscreenCanvas(sw, sh);
+  let scale = OCR_UPSCALE;
+  if (Math.max(sw, sh) * scale > OCR_MAX_DIMENSION) {
+    scale = Math.max(1, OCR_MAX_DIMENSION / Math.max(sw, sh));
+  }
+  const dw = Math.round(sw * scale);
+  const dh = Math.round(sh * scale);
+
+  const canvas = new OffscreenCanvas(dw, dh);
   const ctx = canvas.getContext("2d");
   if (!ctx) {
     throw new Error("Could not get 2D context for cropping");
   }
-  ctx.drawImage(bitmap, sx, sy, sw, sh, 0, 0, sw, sh);
+  ctx.imageSmoothingEnabled = true;
+  ctx.imageSmoothingQuality = "high";
+  ctx.filter = "grayscale(1) contrast(1.4) brightness(1.05)";
+  ctx.drawImage(bitmap, sx, sy, sw, sh, 0, 0, dw, dh);
 
   const croppedBlob = await canvas.convertToBlob({ type: "image/png" });
   const buffer = await croppedBlob.arrayBuffer();
