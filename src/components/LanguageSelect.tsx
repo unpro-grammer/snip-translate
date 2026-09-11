@@ -12,7 +12,7 @@ export default function LanguageSelect({
   includeAuto?: boolean;
 }) {
   return (
-    <label className="block text-xs font-medium text-muted">
+    <label className="block text-xs font-medium">
       {label}
       <select
         value={value}

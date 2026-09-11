@@ -1,14 +1,12 @@
 :root,
 :host {
   --ui-bg: #201f20;
-  --ui-surface: #f9a8d4;
   --ui-input: #fdf2f8;
   --ui-fg: #ffffff;
-  --ui-surface-fg: #000000;
   --ui-muted: #e7d5dd;
   --ui-line: #3b212c;
-  --ui-brand: #f56282;
-  --ui-brand-hover: #fa8ba3;
+  --ui-brand: #e44f6f;
+  --ui-brand-hover: #ec5b7b;
   --ui-danger: #f87171;
   --ui-warning: #fbbf24;
   --ui-success: #4ade80;
