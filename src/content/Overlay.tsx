@@ -30,8 +30,8 @@ interface ResultData {
 const CARD_MIN_WIDTH = 260;
 const CARD_MAX_WIDTH = 420;
 const CARD_MARGIN = 10;
-const OVERLAY_FONT_SIZE = 10;
-const ROMANISATION_FONT_SIZE = 8;
+const OVERLAY_FONT_SIZE = 12;
+const ROMANISATION_FONT_SIZE = 10;
 
 function normalizeRect(a: Point, b: Point): Box {
   return {
@@ -231,6 +231,67 @@ export default function Overlay() {
   );
 }
 
+const CJK_CHAR_RE = /[぀-ヿ㐀-䶿一-鿿가-힯豈-﫿]/;
+const TERMINAL_PUNCT = new Set(["。", "！", "？", "；", ".", "!", "?", ";"]);
+
+function endsSentence(text: string): boolean {
+  const trimmed = text.replace(/[)\]】』」"'“”‘’]+$/, "");
+  return TERMINAL_PUNCT.has(trimmed.slice(-1));
+}
+
+function joinWrapped(a: string, b: string): string {
+  if (!a) {
+    return b;
+  }
+  const noSpace = CJK_CHAR_RE.test(a.slice(-1)) || CJK_CHAR_RE.test(b[0]);
+  return noSpace ? a + b : `${a} ${b}`;
+}
+
+function toParagraphs(text: string): string[] {
+  const paragraphs: string[] = [];
+  let current = "";
+
+  for (const rawLine of text.split("\n")) {
+    const line = rawLine.trim();
+    if (!line) {
+      if (current) {
+        paragraphs.push(current);
+        current = "";
+      }
+      continue;
+    }
+    current = joinWrapped(current, line);
+    if (endsSentence(current)) {
+      paragraphs.push(current);
+      current = "";
+    }
+  }
+  if (current) {
+    paragraphs.push(current);
+  }
+  return paragraphs;
+}
+
+function Lines({
+  text,
+  renderLine,
+  className,
+}: {
+  text: string;
+  renderLine?: (line: string) => React.ReactNode;
+  className?: string;
+}) {
+  const paragraphs = toParagraphs(text);
+
+  return (
+    <div className={`space-y-1.5 ${className ?? ""}`}>
+      {paragraphs.map((p, i) => (
+        <p key={i}>{renderLine ? renderLine(p) : p}</p>
+      ))}
+    </div>
+  );
+}
+
 function PinyinText({ text }: { text: string }) {
   const chars = toPinyinChars(text);
 
@@ -327,9 +388,12 @@ function ResultCard({
             </div>
             <div className="max-h-20 overflow-y-auto text-muted">
               {isChineseLang(result.detectedLang) ? (
-                <PinyinText text={result.sourceText} />
+                <Lines
+                  text={result.sourceText}
+                  renderLine={(line) => <PinyinText text={line} />}
+                />
               ) : (
-                result.sourceText
+                <Lines text={result.sourceText} />
               )}
             </div>
           </div>
@@ -337,7 +401,10 @@ function ResultCard({
             <div className="mb-0.5 uppercase tracking-wide text-brand">
               Translation
             </div>
-            <div className="leading-snug text-bg">{result.translatedText}</div>
+            <Lines
+              text={result.translatedText}
+              className="leading-snug text-bg"
+            />
           </div>
         </div>
       )}
