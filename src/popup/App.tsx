@@ -43,16 +43,15 @@ export default function App() {
   return (
     <div className="w-72 space-y-4 bg-bg p-4 text-fg">
       <div>
-        <h1 className="text-sm font-semibold">Screen Translate</h1>
+        <h1 className="text-sm font-semibold">Snip Translate</h1>
         <p className="mt-0.5 text-xs text-muted">
-          Select any part of a page, even inside images or video, and get an
-          instant translation.
+          Select any part of a page and get an instant translation.
         </p>
       </div>
 
       <button
         onClick={startSelecting}
-        className="w-full rounded-lg bg-brand px-3 py-2 text-sm font-medium text-white shadow hover:bg-brand-hover"
+        className="w-full rounded-lg bg-brand px-3 py-2 text-sm font-medium text-white shadow-lg hover:bg-brand-hover hover:cursor-pointer"
       >
         Start selecting
       </button>
@@ -60,7 +59,7 @@ export default function App() {
       {shortcut && (
         <p className="text-center text-xs text-muted">
           Shortcut:{" "}
-          <kbd className="rounded bg-line/50 px-1.5 py-0.5 font-mono">
+          <kbd className="rounded bg-muted/20 px-1.5 py-0.5 font-mono">
             {shortcut}
           </kbd>
         </p>
@@ -92,7 +91,7 @@ export default function App() {
         onClick={() => chrome.runtime.openOptionsPage()}
         className="w-full text-center text-xs text-brand hover:underline"
       >
-        More settings (DeepL key)
+        More settings
       </button>
     </div>
   );

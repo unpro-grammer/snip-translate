@@ -1,0 +1,20 @@
+@import "tailwindcss";
+@import "../tokens.css";
+
+@theme {
+  --color-surface: var(--ui-surface);
+  --color-input: var(--ui-input);
+  --color-fg: var(--ui-fg);
+  --color-muted: var(--ui-muted);
+  --color-line: var(--ui-line);
+  --color-brand: var(--ui-brand);
+  --color-danger: var(--ui-danger);
+  --color-scrim: var(--ui-scrim);
+  --color-selection: var(--ui-selection);
+  --color-selection-fill: var(--ui-selection-fill);
+  --color-hint: var(--ui-hint);
+}
+
+:host {
+  all: initial;
+}

@@ -34,7 +34,7 @@ export default function App() {
         </p>
       </div>
 
-      <section className="space-y-3 rounded-xl border border-line bg-surface p-4">
+      <section className="space-y-3 rounded-xl bg-surface p-4 text-fg shadow-md">
         <h2 className="text-sm font-semibold">Languages</h2>
         <p className="text-xs text-muted">
           The origin language also picks which Tesseract OCR pack reads the
@@ -57,7 +57,7 @@ export default function App() {
         </div>
       </section>
 
-      <section className="space-y-2 rounded-xl border border-line bg-surface p-4">
+      <section className="space-y-2 rounded-xl bg-surface p-4 text-fg shadow-md">
         <h2 className="text-sm font-semibold">Translation engine</h2>
         <p className="text-xs text-muted">
           By default translations use Google's free public endpoint, fast and no
@@ -78,7 +78,7 @@ export default function App() {
           placeholder="DeepL API key (optional)"
           value={settings.deeplApiKey}
           onChange={(e) => save({ deeplApiKey: e.target.value })}
-          className="w-full rounded-md border border-line bg-bg px-2 py-1.5 text-sm font-mono text-fg"
+          className="w-full rounded-md bg-input px-2 py-1.5 text-sm font-mono text-fg shadow-sm"
         />
       </section>
 
