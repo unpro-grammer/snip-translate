@@ -45,7 +45,7 @@
     "https://translate.googleapis.com/*",
     "https://api-free.deepl.com/*",
     "https://api.deepl.com/*",
-    "https://tessdata.projectnaptha.com/*"
+    "https://cdn.jsdelivr.net/*"
   ],
   "web_accessible_resources": [
     {

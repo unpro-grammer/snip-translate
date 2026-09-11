@@ -174,7 +174,7 @@ export default function Overlay() {
     <div className="fixed inset-0 z-[2147483647]">
       {phase === "selecting" && (
         <div
-          className="absolute inset-0 cursor-crosshair opacity-80"
+          className="absolute inset-0 cursor-crosshair opacity-90"
           onMouseDown={onMouseDown}
           onMouseMove={onMouseMove}
           onMouseUp={onMouseUp}
