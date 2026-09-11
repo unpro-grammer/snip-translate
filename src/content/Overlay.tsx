@@ -1,4 +1,10 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
 import type {
   TranslateRegionRequest,
   TranslateRegionResponse,
@@ -18,6 +24,9 @@ interface ResultData {
   translatedText: string;
   detectedLang?: string;
 }
+
+const CARD_WIDTH = 260;
+const CARD_MARGIN = 10;
 
 function normalizeRect(a: Point, b: Point): Box {
   return {
@@ -136,14 +145,14 @@ export default function Overlay() {
     <div className="fixed inset-0 z-[2147483647]">
       {phase === "selecting" && (
         <div
-          className="absolute inset-0 cursor-crosshair bg-scrim"
+          className="absolute inset-0 flex cursor-crosshair items-center justify-center"
           onMouseDown={onMouseDown}
           onMouseMove={onMouseMove}
           onMouseUp={onMouseUp}
         >
           {liveRect && liveRect.width > 0 && liveRect.height > 0 && (
             <div
-              className="lens-glow absolute rounded-sm border-2 border-selection bg-selection-fill"
+              className="lens-glow absolute rounded-sm border-2 border-selection"
               style={{
                 left: liveRect.x,
                 top: liveRect.y,
@@ -152,7 +161,7 @@ export default function Overlay() {
               }}
             />
           )}
-          <div className="absolute left-1/2 top-4 -translate-x-1/2 rounded-full bg-hint px-4 py-1.5 text-sm text-white shadow-lg">
+          <div className="rounded-full bg-brand px-3 py-1 text-xs text-white shadow-lg">
             Drag to select text to translate &middot;{" "}
             <kbd className="font-mono">Esc</kbd> to cancel
           </div>
@@ -186,50 +195,63 @@ function ResultCard({
   errorMsg: string;
   onClose: () => void;
 }) {
-  const top = rect.y + rect.height + 10;
-  const left = Math.max(8, Math.min(rect.x, window.innerWidth - 340));
+  const cardRef = useRef<HTMLDivElement>(null);
+  const left = Math.max(
+    8,
+    Math.min(rect.x, window.innerWidth - CARD_WIDTH - 8),
+  );
+  const [top, setTop] = useState(rect.y + rect.height + CARD_MARGIN);
+
+  useLayoutEffect(() => {
+    const cardHeight = cardRef.current?.offsetHeight ?? 0;
+    const below = rect.y + rect.height + CARD_MARGIN;
+    const above = rect.y - CARD_MARGIN - cardHeight;
+    const fitsBelow = below + cardHeight <= window.innerHeight - 8;
+    setTop(fitsBelow ? below : Math.max(8, above));
+  }, [rect, phase, result, errorMsg]);
 
   return (
     <div
-      className="absolute w-[320px] rounded-xl bg-surface p-4 text-fg shadow-2xl"
-      style={{ left, top }}
+      ref={cardRef}
+      className="absolute rounded-lg bg-surface p-3 text-sm text-fg shadow-2xl"
+      style={{ left, top, width: CARD_WIDTH }}
     >
       <button
         onClick={onClose}
-        className="absolute right-2 top-2 rounded-full p-1 text-muted hover:bg-line/40"
+        className="absolute right-1.5 top-1.5 rounded-full p-1 text-muted hover:bg-line/40"
         aria-label="Close"
       >
         ✕
       </button>
 
       {phase === "loading" && (
-        <div className="flex items-center gap-2 py-2 text-sm text-muted">
-          <span className="h-4 w-4 animate-spin rounded-full border-2 border-line border-t-brand" />
+        <div className="flex items-center gap-2 py-1 text-xs text-muted">
+          <span className="h-3 w-3 animate-spin rounded-full border-2 border-line border-t-brand" />
           Reading &amp; translating…
         </div>
       )}
 
       {phase === "error" && (
-        <div className="text-sm text-danger">{errorMsg}</div>
+        <div className="text-xs text-danger">{errorMsg}</div>
       )}
 
       {phase === "result" && result && (
-        <div className="space-y-3">
+        <div className="space-y-2">
           <div>
-            <div className="mb-1 text-xs font-medium uppercase tracking-wide text-muted">
+            <div className="mb-0.5 text-[10px] font-medium uppercase tracking-wide text-muted">
               {result.detectedLang
                 ? `Detected: ${result.detectedLang}`
                 : "Original"}
             </div>
-            <div className="max-h-24 overflow-y-auto text-sm text-muted">
+            <div className="max-h-20 overflow-y-auto text-xs text-muted">
               {result.sourceText}
             </div>
           </div>
-          <div className="rounded-lg bg-input p-2 shadow-inner">
-            <div className="mb-1 text-xs font-medium uppercase tracking-wide text-brand">
+          <div className="rounded-md bg-input p-1.5 shadow-inner">
+            <div className="mb-0.5 text-[10px] font-medium uppercase tracking-wide text-brand">
               Translation
             </div>
-            <div className="text-base font-medium leading-snug">
+            <div className="text-sm font-medium leading-snug">
               {result.translatedText}
             </div>
           </div>

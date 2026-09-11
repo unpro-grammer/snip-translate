@@ -10,13 +10,13 @@
   --color-brand: var(--ui-brand);
   --color-danger: var(--ui-danger);
   --color-scrim: var(--ui-scrim);
-  --color-selection: var(--ui-selection);
-  --color-selection-fill: var(--ui-selection-fill);
+  --color-selection: var(--ui-surface);
   --color-hint: var(--ui-hint);
 }
 
 :host {
   all: initial;
+  font-family: var(--font-sans);
 }
 
 @keyframes lens-glow {
