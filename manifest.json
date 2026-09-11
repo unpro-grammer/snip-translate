@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "Screen Snip Translate",
+  "name": "Snip Translate",
   "description": "Press a shortcut, drag a box around any part of the page, and get an instant translation popup, including text in images or video.",
   "version": "0.1.0",
   "icons": {
