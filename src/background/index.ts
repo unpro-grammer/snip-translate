@@ -77,9 +77,16 @@ async function cropToDataUrl(fullDataUrl: string, rect: Rect): Promise<string> {
   ctx.drawImage(bitmap, sx, sy, sw, sh, 0, 0, dw, dh);
 
   const croppedBlob = await canvas.convertToBlob({ type: "image/png" });
-  const buffer = await croppedBlob.arrayBuffer();
-  const base64 = btoa(String.fromCharCode(...new Uint8Array(buffer)));
-  return `data:image/png;base64,${base64}`;
+  return blobToDataUrl(croppedBlob);
+}
+
+function blobToDataUrl(blob: Blob): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onloadend = () => resolve(reader.result as string);
+    reader.onerror = () => reject(reader.error);
+    reader.readAsDataURL(blob);
+  });
 }
 
 async function sendToOffscreen(
