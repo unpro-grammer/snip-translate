@@ -34,8 +34,8 @@
   "commands": {
     "toggle-snip-translate": {
       "suggested_key": {
-        "default": "Ctrl+Shift+E",
-        "mac": "Command+Shift+E"
+        "default": "Ctrl+Shift+F",
+        "mac": "Command+Shift+F"
       },
       "description": "Select a region of the page to translate"
     }
