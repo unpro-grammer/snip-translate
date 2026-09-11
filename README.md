@@ -14,7 +14,7 @@ Chinese text also gets its romanised version (pinyin) shown above each character
 
 Press `Ctrl+Shift+F` (`Cmd+Shift+F` on Mac), drag a box around any text, and it OCRs and translates whatever's inside.
 
-The origin language can be selected in the extension pop-up or options page. On the options page, additional API keys can also be added to use alternative engines.
+The origin and target languages can be selected in the extension pop-up or options page. On the options page, additional API keys can also be added to use alternative engines.
 
 ## OCR and Translation Engines
 
