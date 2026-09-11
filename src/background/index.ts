@@ -170,19 +170,30 @@ async function handleTranslateRegion(
       };
     }
 
-    const { translatedText, detectedLang } = await translateText(
-      sourceText,
-      settings.originLang,
-      settings.targetLang,
-      settings.deeplApiKey || undefined,
-    );
-    return {
-      type: "translate-region-result",
-      ok: true,
-      sourceText,
-      translatedText,
-      detectedLang,
-    };
+    try {
+      const { translatedText, detectedLang } = await translateText(
+        sourceText,
+        settings.originLang,
+        settings.targetLang,
+        settings.deeplApiKey || undefined,
+      );
+      return {
+        type: "translate-region-result",
+        ok: true,
+        sourceText,
+        translatedText,
+        detectedLang,
+      };
+    } catch (err) {
+      // OCR already succeeded, so still return the source text
+      return {
+        type: "translate-region-result",
+        ok: true,
+        sourceText,
+        translationError:
+          err instanceof Error ? err.message : "Translation failed.",
+      };
+    }
   } catch (err) {
     return {
       type: "translate-region-result",

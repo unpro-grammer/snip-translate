@@ -23,7 +23,8 @@ type Box = { x: number; y: number; width: number; height: number };
 
 interface ResultData {
   sourceText: string;
-  translatedText: string;
+  translatedText?: string;
+  translationError?: string;
   detectedLang?: string;
 }
 
@@ -145,6 +146,7 @@ export default function Overlay() {
         setResult({
           sourceText: res.sourceText,
           translatedText: res.translatedText,
+          translationError: res.translationError,
           detectedLang: res.detectedLang,
         });
         setPhase("result");
@@ -401,10 +403,16 @@ function ResultCard({
             <div className="mb-0.5 uppercase tracking-wide text-brand">
               Translation
             </div>
-            <Lines
-              text={result.translatedText}
-              className="leading-snug text-bg"
-            />
+            {result.translatedText ? (
+              <Lines
+                text={result.translatedText}
+                className="leading-snug text-bg"
+              />
+            ) : (
+              <div className="leading-snug text-danger">
+                {result.translationError ?? "Translation failed."}
+              </div>
+            )}
           </div>
         </div>
       )}

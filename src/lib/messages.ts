@@ -21,7 +21,8 @@ export interface TranslateRegionSuccess {
   type: "translate-region-result";
   ok: true;
   sourceText: string;
-  translatedText: string;
+  translatedText?: string;
+  translationError?: string;
   detectedLang?: string;
 }
 

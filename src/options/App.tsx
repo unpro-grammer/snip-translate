@@ -59,7 +59,7 @@ export default function App() {
         <section className="space-y-2 rounded-xl bg-brand p-4 text-fg shadow-md">
           <h2 className="text-lg font-semibold">OCR engine</h2>
           <p className="text-sm">
-            By default text is read locally with Tesseract, which is free and
+            By default, text is read locally with Tesseract, which is free and
             works offline but can struggle with small or stylised screenshot
             text. Optionally add a{" "}
             <a
@@ -86,7 +86,7 @@ export default function App() {
         <section className="space-y-2 rounded-xl bg-brand p-4 text-fg shadow-md">
           <h2 className="text-lg font-semibold">Translation engine</h2>
           <p className="text-sm">
-            By default translations use Google's free public endpoint, which
+            By default, translations use Google's free public endpoint, which
             requires no sign-up. Optionally add a{" "}
             <a
               href="https://www.deepl.com/pro-api"
