@@ -17,6 +17,11 @@ async function getWorker(lang: string): Promise<Tesseract.Worker> {
     workerBlobURL: false,
     corePath: chrome.runtime.getURL("tesseract/"),
     cacheMethod: "write",
+  }).then(async (worker) => {
+    await worker.setParameters({
+      tessedit_pageseg_mode: Tesseract.PSM.SINGLE_BLOCK,
+    });
+    return worker;
   });
   return workerPromise;
 }
