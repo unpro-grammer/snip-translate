@@ -4,6 +4,7 @@
 @theme {
   --color-bg: var(--ui-bg);
   --color-surface: var(--ui-surface);
+  --color-input: var(--ui-input);
   --color-fg: var(--ui-fg);
   --color-muted: var(--ui-muted);
   --color-line: var(--ui-line);
