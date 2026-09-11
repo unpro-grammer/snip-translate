@@ -5,10 +5,12 @@ import {
   useRef,
   useState,
 } from "react";
+import { IoClose } from "react-icons/io5";
 import type {
   TranslateRegionRequest,
   TranslateRegionResponse,
 } from "../lib/messages";
+import { isChineseLang, toPinyinChars } from "../lib/pinyin";
 
 type Phase = "idle" | "selecting" | "loading" | "result" | "error";
 
@@ -27,6 +29,7 @@ interface ResultData {
 
 const CARD_WIDTH = 260;
 const CARD_MARGIN = 10;
+const OVERLAY_FONT_SIZE = 10;
 
 function normalizeRect(a: Point, b: Point): Box {
   return {
@@ -170,7 +173,7 @@ export default function Overlay() {
     <div className="fixed inset-0 z-[2147483647]">
       {phase === "selecting" && (
         <div
-          className="absolute inset-0 flex cursor-crosshair items-center justify-center"
+          className="absolute inset-0 cursor-crosshair opacity-80"
           onMouseDown={onMouseDown}
           onMouseMove={onMouseMove}
           onMouseUp={onMouseUp}
@@ -186,9 +189,16 @@ export default function Overlay() {
               }}
             />
           )}
-          <div className="rounded-full bg-brand px-3 py-1 text-xs text-white shadow-lg">
-            Drag to select text to translate &middot;{" "}
-            <kbd className="font-mono">Esc</kbd> to cancel
+          <div
+            className="absolute rounded-full bg-brand px-2 py-0.5 text-white shadow-lg"
+            style={{
+              fontSize: OVERLAY_FONT_SIZE,
+              left: "50%",
+              top: 8,
+              transform: "translateX(-50%)",
+            }}
+          >
+            Drag to select text to translate. Press <kbd>Esc</kbd> to cancel
           </div>
         </div>
       )}
@@ -216,6 +226,25 @@ export default function Overlay() {
           />
         )}
     </div>
+  );
+}
+
+function PinyinText({ text }: { text: string }) {
+  const chars = toPinyinChars(text);
+
+  return (
+    <span className="leading-loose">
+      {chars.map((c, i) =>
+        c.reading === c.char ? (
+          <span key={i}>{c.char}</span>
+        ) : (
+          <ruby key={i}>
+            {c.char}
+            <rt className="text-brand">{c.reading}</rt>
+          </ruby>
+        ),
+      )}
+    </span>
   );
 }
 
@@ -250,48 +279,48 @@ function ResultCard({
   return (
     <div
       ref={cardRef}
-      className="absolute rounded-lg bg-bg p-3 text-sm text-fg shadow-2xl"
-      style={{ left, top, width: CARD_WIDTH }}
+      className="absolute rounded-lg bg-bg p-3 text-fg shadow-2xl"
+      style={{ left, top, width: CARD_WIDTH, fontSize: OVERLAY_FONT_SIZE }}
     >
       <button
         onClick={onClose}
-        className="absolute flex items-center justify-center rounded-full bg-brand text-xs font-bold text-white hover:cursor-pointer hover:bg-brand-hover"
-        style={{ right: 6, top: 6, width: 16, height: 16, padding: 2 }}
+        className="absolute flex items-center justify-center rounded-full bg-brand text-white hover:cursor-pointer hover:bg-brand-hover"
+        style={{ right: 10, top: 10, width: 16, height: 16 }}
         aria-label="Close"
       >
-        ✕
+        <IoClose size={12} />
       </button>
 
       {phase === "loading" && (
-        <div className="flex items-center gap-2 py-1 text-xs text-muted">
+        <div className="flex items-center gap-2 py-1 text-muted">
           <span className="h-3 w-3 animate-spin rounded-full border-2 border-line border-t-brand" />
-          Reading &amp; translating…
+          Processing…
         </div>
       )}
 
-      {phase === "error" && (
-        <div className="text-xs text-danger">{errorMsg}</div>
-      )}
+      {phase === "error" && <div className="text-danger">{errorMsg}</div>}
 
       {phase === "result" && result && (
         <div className="space-y-2">
           <div>
-            <div className="mb-0.5 text-[10px] uppercase tracking-wide text-muted">
+            <div className="mb-0.5 uppercase tracking-wide text-brand">
               {result.detectedLang
                 ? `Detected: ${result.detectedLang}`
                 : "Original"}
             </div>
-            <div className="max-h-20 overflow-y-auto text-xs text-muted">
-              {result.sourceText}
+            <div className="max-h-20 overflow-y-auto text-muted">
+              {isChineseLang(result.detectedLang) ? (
+                <PinyinText text={result.sourceText} />
+              ) : (
+                result.sourceText
+              )}
             </div>
           </div>
           <div className="rounded-md bg-input p-1.5 shadow-inner">
-            <div className="mb-0.5 text-[10px] uppercase tracking-wide text-brand">
+            <div className="mb-0.5 uppercase tracking-wide text-brand">
               Translation
             </div>
-            <div className="text-xs leading-snug text-bg">
-              {result.translatedText}
-            </div>
+            <div className="leading-snug text-bg">{result.translatedText}</div>
           </div>
         </div>
       )}
