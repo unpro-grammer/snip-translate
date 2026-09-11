@@ -57,6 +57,33 @@ export default function App() {
         </section>
 
         <section className="space-y-2 rounded-xl bg-brand p-4 text-fg shadow-md">
+          <h2 className="text-lg font-semibold">OCR engine</h2>
+          <p className="text-sm">
+            By default text is read locally with Tesseract, which is free and
+            works offline but can struggle with small or stylised screenshot
+            text. Optionally add a{" "}
+            <a
+              href="https://ocr.space/OCRAPI"
+              target="_blank"
+              rel="noreferrer"
+              className="underline"
+            >
+              OCR.space API
+            </a>{" "}
+            key for a more accurate cloud OCR engine; it'll be used
+            automatically when present, falling back to Tesseract if it ever
+            fails.
+          </p>
+          <input
+            type="password"
+            placeholder="OCR.space API key (optional)"
+            value={settings.ocrSpaceApiKey}
+            onChange={(e) => save({ ocrSpaceApiKey: e.target.value })}
+            className="w-full rounded-md bg-input mt-1 px-2 py-1.5 text-sm font-mono text-bg shadow-sm"
+          />
+        </section>
+
+        <section className="space-y-2 rounded-xl bg-brand p-4 text-fg shadow-md">
           <h2 className="text-lg font-semibold">Translation engine</h2>
           <p className="text-sm">
             By default translations use Google's free public endpoint, which

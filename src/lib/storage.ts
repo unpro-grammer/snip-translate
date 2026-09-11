@@ -3,12 +3,15 @@ export interface Settings {
   targetLang: string;
   /** Optional DeepL API key. When set, translation prefers DeepL over the free Google endpoint. */
   deeplApiKey: string;
+  /** Optional OCR.space API key. When set, OCR prefers OCR.space over the local Tesseract engine. */
+  ocrSpaceApiKey: string;
 }
 
 export const DEFAULT_SETTINGS: Settings = {
   originLang: "auto",
   targetLang: "en",
   deeplApiKey: "",
+  ocrSpaceApiKey: "",
 };
 
 export async function getSettings(): Promise<Settings> {

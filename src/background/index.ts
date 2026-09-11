@@ -10,6 +10,7 @@ import type {
 import { LANGUAGES } from "../lib/languages";
 import { getSettings } from "../lib/storage";
 import { translateText } from "../lib/translate";
+import { ocrWithOcrSpace } from "../lib/ocrSpace";
 
 function resolveOcrLang(originLang: string): string {
   if (originLang === "auto") {
@@ -19,6 +20,13 @@ function resolveOcrLang(originLang: string): string {
     LANGUAGES.find((l) => l.translateCode === originLang)?.tesseractCode ??
     "eng"
   );
+}
+
+function resolveOcrSpaceLang(originLang: string): string | undefined {
+  if (originLang === "auto") {
+    return "auto";
+  }
+  return LANGUAGES.find((l) => l.translateCode === originLang)?.ocrSpaceCode;
 }
 
 const OFFSCREEN_URL = "src/offscreen/index.html";
@@ -92,6 +100,42 @@ async function sendToOffscreen(
   throw new Error("unreachable");
 }
 
+async function runOcrViaTesseract(
+  dataUrl: string,
+  originLang: string,
+): Promise<string> {
+  await ensureOffscreenDocument();
+  const ocrRequest: OcrRequest = {
+    type: "ocr-image",
+    dataUrl,
+    lang: resolveOcrLang(originLang),
+  };
+  const ocrResponse = await sendToOffscreen(ocrRequest);
+  if (!ocrResponse?.ok) {
+    throw new Error(ocrResponse?.error ?? "No text found in that region.");
+  }
+  return ocrResponse.text ?? "";
+}
+
+async function runOcr(
+  dataUrl: string,
+  originLang: string,
+  ocrSpaceApiKey: string,
+): Promise<string> {
+  const ocrSpaceLang = resolveOcrSpaceLang(originLang);
+  if (ocrSpaceApiKey && ocrSpaceLang) {
+    try {
+      return await ocrWithOcrSpace(dataUrl, ocrSpaceLang, ocrSpaceApiKey);
+    } catch (err) {
+      console.warn(
+        "[on-screen-translator] OCR.space failed, falling back to Tesseract:",
+        err,
+      );
+    }
+  }
+  return runOcrViaTesseract(dataUrl, originLang);
+}
+
 async function handleTranslateRegion(
   rect: Rect,
   tabId: number,
@@ -105,24 +149,22 @@ async function handleTranslateRegion(
     });
     const croppedDataUrl = await cropToDataUrl(fullDataUrl, rect);
 
-    await ensureOffscreenDocument();
-    const ocrRequest: OcrRequest = {
-      type: "ocr-image",
-      dataUrl: croppedDataUrl,
-      lang: resolveOcrLang(settings.originLang),
-    };
-    const ocrResponse = await sendToOffscreen(ocrRequest);
+    const sourceText = await runOcr(
+      croppedDataUrl,
+      settings.originLang,
+      settings.ocrSpaceApiKey,
+    );
 
-    if (!ocrResponse?.ok || !ocrResponse.text) {
+    if (!sourceText) {
       return {
         type: "translate-region-result",
         ok: false,
-        error: ocrResponse?.error ?? "No text found in that region.",
+        error: "No text found in that region.",
       };
     }
 
     const { translatedText, detectedLang } = await translateText(
-      ocrResponse.text,
+      sourceText,
       settings.originLang,
       settings.targetLang,
       settings.deeplApiKey || undefined,
@@ -130,7 +172,7 @@ async function handleTranslateRegion(
     return {
       type: "translate-region-result",
       ok: true,
-      sourceText: ocrResponse.text,
+      sourceText,
       translatedText,
       detectedLang,
     };
