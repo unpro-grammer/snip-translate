@@ -89,7 +89,7 @@ export default function App() {
 
       <button
         onClick={() => chrome.runtime.openOptionsPage()}
-        className="w-full text-center text-xs text-brand hover:underline"
+        className="w-full text-center text-xs text-brand hover:underline cursor-pointer"
       >
         More settings
       </button>

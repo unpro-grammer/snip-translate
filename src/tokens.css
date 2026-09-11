@@ -1,8 +1,10 @@
-:root {
+:root,
+:host {
   --ui-bg: #fdf2f8;
   --ui-surface: #f9a8d4;
   --ui-input: #fdf2f8;
   --ui-fg: #000000;
+  --ui-surface-fg: #000000;
   --ui-muted: #6b7280;
   --ui-line: #e5e5e5;
   --ui-brand: #f56282;
@@ -11,17 +13,19 @@
   --ui-warning: #d97706;
   --ui-success: #16a34a;
   --ui-scrim: rgb(0 0 0 / 0.35);
-  --ui-selection: #60a5fa;
-  --ui-selection-fill: rgb(96 165 250 / 0.12);
+  --ui-selection: #f9a8d4;
+  --ui-selection-fill: rgb(249 168 212 / 0.18);
   --ui-hint: rgb(23 23 23 / 0.9);
 }
 
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root,
+  :host {
     --ui-bg: #201f20;
     --ui-surface: #f9a8d4;
     --ui-input: #fdf2f8;
     --ui-fg: #ffffff;
+    --ui-surface-fg: #000000;
     --ui-muted: #e7d5dd;
     --ui-line: #3b212c;
     --ui-brand: #f56282;

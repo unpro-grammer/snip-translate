@@ -1,4 +1,4 @@
-import { LANGUAGES } from '../lib/languages'
+import { LANGUAGES } from "../lib/languages";
 
 export default function LanguageSelect({
   label,
@@ -6,10 +6,10 @@ export default function LanguageSelect({
   onChange,
   includeAuto,
 }: {
-  label: string
-  value: string
-  onChange: (value: string) => void
-  includeAuto?: boolean
+  label: string;
+  value: string;
+  onChange: (value: string) => void;
+  includeAuto?: boolean;
 }) {
   return (
     <label className="block text-xs font-medium text-muted">
@@ -17,7 +17,7 @@ export default function LanguageSelect({
       <select
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="mt-1 w-full rounded-md bg-input px-2 py-1.5 text-sm text-fg shadow-sm"
+        className="mt-1 w-full rounded-md bg-input px-2 py-1.5 text-bg shadow-sm hover:cursor-pointer"
       >
         {includeAuto && <option value="auto">Auto-detect</option>}
         {LANGUAGES.map((l) => (
@@ -27,5 +27,5 @@ export default function LanguageSelect({
         ))}
       </select>
     </label>
-  )
+  );
 }

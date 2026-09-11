@@ -143,7 +143,7 @@ export default function Overlay() {
         >
           {liveRect && liveRect.width > 0 && liveRect.height > 0 && (
             <div
-              className="absolute rounded-sm border-2 border-selection bg-selection-fill shadow-[0_0_0_9999px_var(--color-scrim)]"
+              className="lens-glow absolute rounded-sm border-2 border-selection bg-selection-fill"
               style={{
                 left: liveRect.x,
                 top: liveRect.y,

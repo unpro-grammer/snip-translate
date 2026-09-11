@@ -9,9 +9,9 @@ function mount() {
 
   const shadow = host.attachShadow({ mode: "open" });
 
-  const style = document.createElement("style");
-  style.textContent = contentStyles;
-  shadow.appendChild(style);
+  const sheet = new CSSStyleSheet();
+  sheet.replaceSync(contentStyles);
+  shadow.adoptedStyleSheets = [sheet];
 
   const appRoot = document.createElement("div");
   shadow.appendChild(appRoot);

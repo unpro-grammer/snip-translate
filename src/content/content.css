@@ -18,3 +18,21 @@
 :host {
   all: initial;
 }
+
+@keyframes lens-glow {
+  0%,
+  100% {
+    box-shadow:
+      0 0 0 9999px var(--color-scrim),
+      0 0 16px 3px var(--color-selection);
+  }
+  50% {
+    box-shadow:
+      0 0 0 9999px var(--color-scrim),
+      0 0 30px 8px var(--color-selection);
+  }
+}
+
+.lens-glow {
+  animation: lens-glow 1.8s ease-in-out infinite;
+}
