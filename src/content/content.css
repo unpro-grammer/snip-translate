@@ -2,15 +2,19 @@
 @import "../tokens.css";
 
 @theme {
+  --color-bg: var(--ui-bg);
   --color-surface: var(--ui-surface);
   --color-input: var(--ui-input);
   --color-fg: var(--ui-fg);
   --color-muted: var(--ui-muted);
   --color-line: var(--ui-line);
   --color-brand: var(--ui-brand);
+  --color-brand-hover: var(--ui-brand-hover);
   --color-danger: var(--ui-danger);
+  --color-warning: var(--ui-warning);
+  --color-success: var(--ui-success);
   --color-scrim: var(--ui-scrim);
-  --color-selection: var(--ui-surface);
+  --color-selection: var(--ui-brand);
   --color-hint: var(--ui-hint);
 }
 

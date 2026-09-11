@@ -44,6 +44,11 @@ export default function Overlay() {
   const [result, setResult] = useState<ResultData | null>(null);
   const [errorMsg, setErrorMsg] = useState("");
   const [finalRect, setFinalRect] = useState<Box | null>(null);
+  const [scrollAtCapture, setScrollAtCapture] = useState({ x: 0, y: 0 });
+  const [liveScroll, setLiveScroll] = useState({
+    x: window.scrollX,
+    y: window.scrollY,
+  });
   const draggingRef = useRef(false);
 
   const reset = useCallback(() => {
@@ -55,6 +60,17 @@ export default function Overlay() {
     setFinalRect(null);
     draggingRef.current = false;
   }, []);
+
+  useEffect(() => {
+    if (!finalRect) {
+      return;
+    }
+    const onScroll = () => {
+      setLiveScroll({ x: window.scrollX, y: window.scrollY });
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, [finalRect]);
 
   useEffect(() => {
     const listener = (message: { type: string }) => {
@@ -107,6 +123,8 @@ export default function Overlay() {
     }
 
     setFinalRect(rect);
+    setScrollAtCapture({ x: window.scrollX, y: window.scrollY });
+    setLiveScroll({ x: window.scrollX, y: window.scrollY });
     setPhase("loading");
 
     const req: TranslateRegionRequest = {
@@ -141,6 +159,13 @@ export default function Overlay() {
 
   const liveRect = start && current ? normalizeRect(start, current) : null;
 
+  const anchoredRect = finalRect && {
+    x: finalRect.x + scrollAtCapture.x - liveScroll.x,
+    y: finalRect.y + scrollAtCapture.y - liveScroll.y,
+    width: finalRect.width,
+    height: finalRect.height,
+  };
+
   return (
     <div className="fixed inset-0 z-[2147483647]">
       {phase === "selecting" && (
@@ -168,10 +193,22 @@ export default function Overlay() {
         </div>
       )}
 
+      {anchoredRect && (
+        <div
+          className="lens-glow pointer-events-none absolute rounded-sm border-2 border-selection"
+          style={{
+            left: anchoredRect.x,
+            top: anchoredRect.y,
+            width: anchoredRect.width,
+            height: anchoredRect.height,
+          }}
+        />
+      )}
+
       {(phase === "loading" || phase === "result" || phase === "error") &&
-        finalRect && (
+        anchoredRect && (
           <ResultCard
-            rect={finalRect}
+            rect={anchoredRect}
             phase={phase}
             result={result}
             errorMsg={errorMsg}
@@ -213,12 +250,13 @@ function ResultCard({
   return (
     <div
       ref={cardRef}
-      className="absolute rounded-lg bg-surface p-3 text-sm text-fg shadow-2xl"
+      className="absolute rounded-lg bg-bg p-3 text-sm text-fg shadow-2xl"
       style={{ left, top, width: CARD_WIDTH }}
     >
       <button
         onClick={onClose}
-        className="absolute right-1.5 top-1.5 rounded-full p-1 text-muted hover:bg-line/40"
+        className="absolute flex items-center justify-center rounded-full bg-brand text-xs font-bold text-white hover:cursor-pointer hover:bg-brand-hover"
+        style={{ right: 6, top: 6, width: 16, height: 16, padding: 2 }}
         aria-label="Close"
       >
         ✕
@@ -238,7 +276,7 @@ function ResultCard({
       {phase === "result" && result && (
         <div className="space-y-2">
           <div>
-            <div className="mb-0.5 text-[10px] font-medium uppercase tracking-wide text-muted">
+            <div className="mb-0.5 text-[10px] uppercase tracking-wide text-muted">
               {result.detectedLang
                 ? `Detected: ${result.detectedLang}`
                 : "Original"}
@@ -248,10 +286,10 @@ function ResultCard({
             </div>
           </div>
           <div className="rounded-md bg-input p-1.5 shadow-inner">
-            <div className="mb-0.5 text-[10px] font-medium uppercase tracking-wide text-brand">
+            <div className="mb-0.5 text-[10px] uppercase tracking-wide text-brand">
               Translation
             </div>
-            <div className="text-sm font-medium leading-snug">
+            <div className="text-xs leading-snug text-bg">
               {result.translatedText}
             </div>
           </div>
