@@ -27,7 +27,8 @@ interface ResultData {
   detectedLang?: string;
 }
 
-const CARD_WIDTH = 260;
+const CARD_MIN_WIDTH = 260;
+const CARD_MAX_WIDTH = 420;
 const CARD_MARGIN = 10;
 const OVERLAY_FONT_SIZE = 10;
 const ROMANISATION_FONT_SIZE = 8;
@@ -268,14 +269,17 @@ function ResultCard({
   onClose: () => void;
 }) {
   const cardRef = useRef<HTMLDivElement>(null);
-  const left = Math.max(
-    8,
-    Math.min(rect.x, window.innerWidth - CARD_WIDTH - 8),
+  const [left, setLeft] = useState(
+    Math.max(8, Math.min(rect.x, window.innerWidth - CARD_MIN_WIDTH - 8)),
   );
   const [top, setTop] = useState(rect.y + rect.height + CARD_MARGIN);
 
   useLayoutEffect(() => {
+    const cardWidth = cardRef.current?.offsetWidth ?? CARD_MIN_WIDTH;
     const cardHeight = cardRef.current?.offsetHeight ?? 0;
+
+    setLeft(Math.max(8, Math.min(rect.x, window.innerWidth - cardWidth - 8)));
+
     const below = rect.y + rect.height + CARD_MARGIN;
     const above = rect.y - CARD_MARGIN - cardHeight;
     const fitsBelow = below + cardHeight <= window.innerHeight - 8;
@@ -286,7 +290,14 @@ function ResultCard({
     <div
       ref={cardRef}
       className="absolute rounded-lg bg-bg p-3 text-fg shadow-2xl"
-      style={{ left, top, width: CARD_WIDTH, fontSize: OVERLAY_FONT_SIZE }}
+      style={{
+        left,
+        top,
+        width: "max-content",
+        minWidth: CARD_MIN_WIDTH,
+        maxWidth: CARD_MAX_WIDTH,
+        fontSize: OVERLAY_FONT_SIZE,
+      }}
     >
       <button
         onClick={onClose}
