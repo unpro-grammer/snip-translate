@@ -30,6 +30,7 @@ interface ResultData {
 const CARD_WIDTH = 260;
 const CARD_MARGIN = 10;
 const OVERLAY_FONT_SIZE = 10;
+const ROMANISATION_FONT_SIZE = 8;
 
 function normalizeRect(a: Point, b: Point): Box {
   return {
@@ -240,7 +241,12 @@ function PinyinText({ text }: { text: string }) {
         ) : (
           <ruby key={i}>
             {c.char}
-            <rt className="text-brand">{c.reading}</rt>
+            <rt
+              className="text-brand"
+              style={{ fontSize: ROMANISATION_FONT_SIZE }}
+            >
+              {c.reading}
+            </rt>
           </ruby>
         ),
       )}
@@ -303,7 +309,7 @@ function ResultCard({
       {phase === "result" && result && (
         <div className="space-y-2">
           <div>
-            <div className="mb-0.5 uppercase tracking-wide text-brand">
+            <div className="mb-0.5 uppercase tracking-wide text-fg">
               {result.detectedLang
                 ? `Detected: ${result.detectedLang}`
                 : "Original"}
