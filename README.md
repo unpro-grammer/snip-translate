@@ -20,9 +20,9 @@ The origin and target languages can be selected in the extension pop-up or optio
 
 Text is read locally with Tesseract by default, which requires no setup. Add an [OCR.space](https://ocr.space/OCRAPI) key in settings for a more accurate cloud engine. This is free but limited to 500 requests per day and 25000 requests per month. The extension will fall back to Tesseract if it fails or if the limit is hit.
 
-Translation uses Google's free endpoint by default. Add a [DeepL](https://www.deepl.com/pro-api) key for higher reliability. The same fallback behaviour applies.
+Translation uses Google's free endpoint by default and falls back to [MyMemory](https://mymemory.translated.net/) if that fails. You can also add your email in settings to raise MyMemory's free daily limit. Add a [DeepL](https://www.deepl.com/pro-api) key for higher reliability.
 
-Both keys are stored in `chrome.storage.sync`, so they sync across your signed-in devices, and are only sent to their own provider.
+All keys are stored in `chrome.storage.sync`, so they sync across your signed-in devices, and are only sent to their own provider.
 
 ## How to Set Up
 
