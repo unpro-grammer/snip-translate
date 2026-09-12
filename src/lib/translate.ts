@@ -1,6 +1,23 @@
+import { containsHanScript } from "./pinyin";
+
 export interface TranslateResult {
   translatedText: string;
   detectedLang?: string;
+  provider?: string;
+}
+
+const FETCH_TIMEOUT_MS = 6000;
+
+function fetchWithTimeout(
+  url: string,
+  init?: RequestInit,
+  timeoutMs = FETCH_TIMEOUT_MS,
+): Promise<Response> {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+  return fetch(url, { ...init, signal: controller.signal }).finally(() =>
+    clearTimeout(timer),
+  );
 }
 
 async function translateWithGoogle(
@@ -15,7 +32,7 @@ async function translateWithGoogle(
   url.searchParams.set("dt", "t");
   url.searchParams.set("q", text);
 
-  const res = await fetch(url.toString());
+  const res = await fetchWithTimeout(url.toString());
   if (!res.ok) {
     throw new Error(`Google Translate request failed (${res.status})`);
   }
@@ -27,6 +44,43 @@ async function translateWithGoogle(
   return { translatedText, detectedLang };
 }
 
+async function translateWithMyMemory(
+  text: string,
+  source: string,
+  target: string,
+): Promise<TranslateResult> {
+  const langpair = `${source === "auto" ? "autodetect" : source}|${target}`;
+  const url = new URL("https://api.mymemory.translated.net/get");
+  url.searchParams.set("q", text);
+  url.searchParams.set("langpair", langpair);
+
+  const res = await fetchWithTimeout(url.toString());
+  if (!res.ok) {
+    throw new Error(`MyMemory request failed (${res.status})`);
+  }
+  const data = await res.json();
+  if (data.responseStatus !== 200 && data.responseStatus !== "200") {
+    throw new Error(
+      typeof data.responseDetails === "string"
+        ? data.responseDetails
+        : "MyMemory returned an error",
+    );
+  }
+  const translatedText = data.responseData?.translatedText;
+  if (!translatedText) {
+    throw new Error("MyMemory returned no translation");
+  }
+
+  let detectedLang: string | undefined;
+  if (source !== "auto") {
+    detectedLang = source;
+  } else if (containsHanScript(text)) {
+    detectedLang = "zh";
+  }
+
+  return { translatedText, detectedLang };
+}
+
 async function translateWithDeepL(
   text: string,
   source: string,
@@ -34,7 +88,7 @@ async function translateWithDeepL(
   apiKey: string,
 ): Promise<TranslateResult> {
   const host = apiKey.endsWith(":fx") ? "api-free.deepl.com" : "api.deepl.com";
-  const res = await fetch(`https://${host}/v2/translate`, {
+  const res = await fetchWithTimeout(`https://${host}/v2/translate`, {
     method: "POST",
     headers: {
       Authorization: `DeepL-Auth-Key ${apiKey}`,
@@ -68,7 +122,13 @@ export async function translateText(
 ): Promise<TranslateResult> {
   if (deeplApiKey) {
     try {
-      return await translateWithDeepL(text, source, target, deeplApiKey);
+      const result = await translateWithDeepL(
+        text,
+        source,
+        target,
+        deeplApiKey,
+      );
+      return { ...result, provider: "DeepL" };
     } catch (err) {
       console.warn(
         "[on-screen-translator] DeepL failed, falling back to Google:",
@@ -76,5 +136,17 @@ export async function translateText(
       );
     }
   }
-  return translateWithGoogle(text, source, target);
+
+  try {
+    const result = await translateWithGoogle(text, source, target);
+    return { ...result, provider: "Google" };
+  } catch (err) {
+    console.warn(
+      "[on-screen-translator] Google failed, falling back to MyMemory:",
+      err,
+    );
+  }
+
+  const result = await translateWithMyMemory(text, source, target);
+  return { ...result, provider: "MyMemory" };
 }

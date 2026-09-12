@@ -24,6 +24,7 @@ export interface TranslateRegionSuccess {
   translatedText?: string;
   translationError?: string;
   detectedLang?: string;
+  provider?: string;
 }
 
 export type TranslateRegionResponse =

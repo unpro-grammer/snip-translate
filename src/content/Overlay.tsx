@@ -26,6 +26,7 @@ interface ResultData {
   translatedText?: string;
   translationError?: string;
   detectedLang?: string;
+  provider?: string;
 }
 
 const CARD_MIN_WIDTH = 260;
@@ -148,6 +149,7 @@ export default function Overlay() {
           translatedText: res.translatedText,
           translationError: res.translationError,
           detectedLang: res.detectedLang,
+          provider: res.provider,
         });
         setPhase("result");
       } else {
@@ -402,6 +404,9 @@ function ResultCard({
           <div className="rounded-md bg-input p-1.5 shadow-inner">
             <div className="mb-0.5 uppercase tracking-wide text-brand">
               Translation
+              {result.translatedText && result.provider
+                ? ` (${result.provider})`
+                : ""}
             </div>
             {result.translatedText ? (
               <Lines

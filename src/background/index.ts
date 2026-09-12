@@ -172,7 +172,7 @@ async function handleTranslateRegion(
     }
 
     try {
-      const { translatedText, detectedLang } = await translateText(
+      const { translatedText, detectedLang, provider } = await translateText(
         sourceText,
         settings.originLang,
         settings.targetLang,
@@ -184,6 +184,7 @@ async function handleTranslateRegion(
         sourceText,
         translatedText,
         detectedLang,
+        provider,
       };
     } catch (err) {
       // OCR already succeeded, so still return the source text
