@@ -12,6 +12,10 @@ export function isChineseLang(lang?: string): boolean {
   return lang.toLowerCase().startsWith("zh");
 }
 
+export function containsHanScript(text: string): boolean {
+  return /\p{Script=Han}/u.test(text);
+}
+
 export function toPinyinChars(text: string): PinyinChar[] {
   const chars = Array.from(text);
   const readings = pinyin(text, { type: "array", toneType: "symbol" });

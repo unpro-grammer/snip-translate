@@ -11,6 +11,7 @@ import { LANGUAGES } from "../lib/languages";
 import { getSettings } from "../lib/storage";
 import { translateText } from "../lib/translate";
 import { ocrWithOcrSpace } from "../lib/ocrSpace";
+import { containsHanScript } from "../lib/pinyin";
 
 function resolveOcrLang(originLang: string): string {
   if (originLang === "auto") {
@@ -186,10 +187,17 @@ async function handleTranslateRegion(
       };
     } catch (err) {
       // OCR already succeeded, so still return the source text
+      const detectedLang =
+        settings.originLang !== "auto"
+          ? settings.originLang
+          : containsHanScript(sourceText)
+            ? "zh"
+            : undefined;
       return {
         type: "translate-region-result",
         ok: true,
         sourceText,
+        detectedLang,
         translationError:
           err instanceof Error ? err.message : "Translation failed.",
       };
