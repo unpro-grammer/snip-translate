@@ -106,6 +106,25 @@ export default function App() {
             onChange={(e) => save({ deeplApiKey: e.target.value })}
             className="w-full rounded-md bg-input mt-1 px-2 py-1.5 text-sm font-mono text-bg shadow-sm"
           />
+          <p className="text-sm">
+            If both Google and DeepL fail, translation falls back to{" "}
+            <a
+              href="https://mymemory.translated.net/"
+              target="_blank"
+              rel="noreferrer"
+              className="underline"
+            >
+              MyMemory
+            </a>
+            . Add your email to raise its free daily limit.
+          </p>
+          <input
+            type="email"
+            placeholder="Email for MyMemory (optional)"
+            value={settings.myMemoryEmail}
+            onChange={(e) => save({ myMemoryEmail: e.target.value })}
+            className="w-full rounded-md bg-input mt-1 px-2 py-1.5 text-sm font-mono text-bg shadow-sm"
+          />
         </section>
 
         <p

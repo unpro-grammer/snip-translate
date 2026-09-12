@@ -48,11 +48,15 @@ async function translateWithMyMemory(
   text: string,
   source: string,
   target: string,
+  email?: string,
 ): Promise<TranslateResult> {
   const langpair = `${source === "auto" ? "autodetect" : source}|${target}`;
   const url = new URL("https://api.mymemory.translated.net/get");
   url.searchParams.set("q", text);
   url.searchParams.set("langpair", langpair);
+  if (email) {
+    url.searchParams.set("de", email);
+  }
 
   const res = await fetchWithTimeout(url.toString());
   if (!res.ok) {
@@ -119,6 +123,7 @@ export async function translateText(
   source: string,
   target: string,
   deeplApiKey?: string,
+  myMemoryEmail?: string,
 ): Promise<TranslateResult> {
   if (deeplApiKey) {
     try {
@@ -147,6 +152,11 @@ export async function translateText(
     );
   }
 
-  const result = await translateWithMyMemory(text, source, target);
+  const result = await translateWithMyMemory(
+    text,
+    source,
+    target,
+    myMemoryEmail,
+  );
   return { ...result, provider: "MyMemory" };
 }

@@ -1,10 +1,12 @@
 export interface Settings {
   originLang: string;
   targetLang: string;
-  /** Optional DeepL API key. When set, translation prefers DeepL over the free Google endpoint. */
+  // Optional DeepL API key. When set, translation prefers DeepL over the free Google endpoint
   deeplApiKey: string;
-  /** Optional OCR.space API key. When set, OCR prefers OCR.space over the local Tesseract engine. */
+  // Optional OCR.space API key. When set, OCR prefers OCR.space over the local Tesseract engine
   ocrSpaceApiKey: string;
+  // Optional email for the MyMemory fallback. Raises its daily quota
+  myMemoryEmail: string;
 }
 
 export const DEFAULT_SETTINGS: Settings = {
@@ -12,6 +14,7 @@ export const DEFAULT_SETTINGS: Settings = {
   targetLang: "en",
   deeplApiKey: "",
   ocrSpaceApiKey: "",
+  myMemoryEmail: "",
 };
 
 export async function getSettings(): Promise<Settings> {

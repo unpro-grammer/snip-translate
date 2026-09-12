@@ -177,6 +177,7 @@ async function handleTranslateRegion(
         settings.originLang,
         settings.targetLang,
         settings.deeplApiKey || undefined,
+        settings.myMemoryEmail || undefined,
       );
       return {
         type: "translate-region-result",
