@@ -7,6 +7,7 @@ export interface TranslateResult {
 }
 
 const FETCH_TIMEOUT_MS = 6000;
+const MAX_TRANSLATE_CHARS = 1000;
 
 function fetchWithTimeout(
   url: string,
@@ -125,6 +126,10 @@ export async function translateText(
   deeplApiKey?: string,
   myMemoryEmail?: string,
 ): Promise<TranslateResult> {
+  if (text.length > MAX_TRANSLATE_CHARS) {
+    text = text.slice(0, MAX_TRANSLATE_CHARS);
+  }
+
   if (deeplApiKey) {
     try {
       const result = await translateWithDeepL(
