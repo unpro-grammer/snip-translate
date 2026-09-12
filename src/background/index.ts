@@ -136,7 +136,7 @@ async function runOcr(
       return await ocrWithOcrSpace(dataUrl, ocrSpaceLang, ocrSpaceApiKey);
     } catch (err) {
       console.warn(
-        "[on-screen-translator] OCR.space failed, falling back to Tesseract:",
+        "[snip-translate] OCR.space failed, falling back to Tesseract:",
         err,
       );
     }

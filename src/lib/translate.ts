@@ -136,7 +136,7 @@ export async function translateText(
       return { ...result, provider: "DeepL" };
     } catch (err) {
       console.warn(
-        "[on-screen-translator] DeepL failed, falling back to Google:",
+        "[snip-translate] DeepL failed, falling back to Google:",
         err,
       );
     }
@@ -147,7 +147,7 @@ export async function translateText(
     return { ...result, provider: "Google" };
   } catch (err) {
     console.warn(
-      "[on-screen-translator] Google failed, falling back to MyMemory:",
+      "[snip-translate] Google failed, falling back to MyMemory:",
       err,
     );
   }
