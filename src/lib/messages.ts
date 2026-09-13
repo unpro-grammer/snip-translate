@@ -35,6 +35,10 @@ export interface StartSelectionMessage {
   type: "start-selection";
 }
 
+export interface RegionCapturedMessage {
+  type: "region-captured";
+}
+
 export interface OcrRequest {
   type: "ocr-image";
   dataUrl: string;
@@ -52,5 +56,6 @@ export type ExtensionMessage =
   | TranslateRegionRequest
   | TranslateRegionResponse
   | StartSelectionMessage
+  | RegionCapturedMessage
   | OcrRequest
   | OcrResponse;

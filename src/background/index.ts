@@ -3,6 +3,7 @@ import type {
   OcrRequest,
   OcrResponse,
   Rect,
+  RegionCapturedMessage,
   StartSelectionMessage,
   TranslateRegionRequest,
   TranslateRegionResponse,
@@ -156,6 +157,11 @@ async function handleTranslateRegion(
       format: "png",
     });
     const croppedDataUrl = await cropToDataUrl(fullDataUrl, rect);
+
+    // The screen is already captured, so it's now safe to show overlay UI
+    // again without it ending up in the OCR'd image.
+    const capturedMsg: RegionCapturedMessage = { type: "region-captured" };
+    chrome.tabs.sendMessage(tabId, capturedMsg).catch(() => {});
 
     const sourceText = await runOcr(
       croppedDataUrl,

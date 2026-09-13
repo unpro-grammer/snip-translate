@@ -12,7 +12,17 @@ import type {
 } from "../lib/messages";
 import { isChineseLang, toPinyinChars } from "../lib/pinyin";
 
-type Phase = "idle" | "selecting" | "loading" | "result" | "error";
+type Phase =
+  | "idle"
+  | "selecting"
+  | "capturing"
+  | "loading"
+  | "result"
+  | "error";
+
+function nextFrame(): Promise<void> {
+  return new Promise((resolve) => requestAnimationFrame(() => resolve()));
+}
 
 interface Point {
   x: number;
@@ -83,6 +93,8 @@ export default function Overlay() {
     const listener = (message: { type: string }) => {
       if (message.type === "start-selection") {
         setPhase("selecting");
+      } else if (message.type === "region-captured") {
+        setPhase((p) => (p === "capturing" ? "loading" : p));
       }
     };
     chrome.runtime.onMessage.addListener(listener);
@@ -132,7 +144,10 @@ export default function Overlay() {
     setFinalRect(rect);
     setScrollAtCapture({ x: window.scrollX, y: window.scrollY });
     setLiveScroll({ x: window.scrollX, y: window.scrollY });
-    setPhase("loading");
+
+    setPhase("capturing");
+    await nextFrame();
+    await nextFrame();
 
     const req: TranslateRegionRequest = {
       type: "translate-region",
@@ -162,7 +177,7 @@ export default function Overlay() {
     }
   }, [start, current, reset]);
 
-  if (phase === "idle") {
+  if (phase === "idle" || phase === "capturing") {
     return null;
   }
 
